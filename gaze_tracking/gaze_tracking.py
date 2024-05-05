@@ -2,8 +2,9 @@ from __future__ import division
 import os
 import cv2
 import dlib
-from .eye import Eye
-from .calibration import Calibration
+from src.utils.eye import Eye
+from src.utils.calibration import Calibration
+
 
 
 class GazeTracking(object):
