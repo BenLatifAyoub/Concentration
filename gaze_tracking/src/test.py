@@ -111,10 +111,13 @@ while True:
                 emotion_label_arg = np.argmax(emotion_prediction)
                 emotion_text = emotion_labels[emotion_label_arg]
 
-            # Assign color based on emotion
+             # Assign color based on emotion
+                # emotion_probability= somme ( emotion_prediction[i]*poid d'emotion )
+                # print(emotion_prediction)
                 color = (0, 255, 0)  # Default color for neutral emotion
                 if emotion_text == 'angry':
                     color = (0, 0, 255)  # Red for angry
+                     
                     facial_emotion_CIs[i] = emotion_probability*0.25*gw_values[i]
                 elif emotion_text == 'sad':
                     color = (255, 0, 0)  # Blue for sad
@@ -138,7 +141,7 @@ while True:
 
 
              # Display facial emotion concentration index (CI) on the frame
-                cv2.putText(frame, f"Facial Emotion CI: {facial_emotion_CIs[i]:.2f}%", (x, y-50), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 2)
+                cv2.putText(frame, f"Facial Emotion CI: {facial_emotion_CIs[i]:.2f}", (x, y-50), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 2)
 
             except Exception as e:
                 print(f"Error processing face: {e}")
