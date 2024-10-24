@@ -5,22 +5,18 @@ from .pupil import Pupil
 
 
 class Eye(object):
-    """
-    This class creates a new frame to isolate the eye and
-    initiates the pupil detection.
-    """
 
     LEFT_EYE_POINTS = [36, 37, 38, 39, 40, 41]
     RIGHT_EYE_POINTS = [42, 43, 44, 45, 46, 47]
 
-    def __init__(self, original_frame, landmarks, side, calibration):
+    def __init__(self, original_frames, landmarks, side, calibration):
         self.frame = None
         self.origin = None
         self.center = None
         self.pupil = None
         self.landmark_points = None
 
-        self._analyze(original_frame, landmarks, side, calibration)
+        self._analyze(original_frames, landmarks, side, calibration)
 
     @staticmethod
     def _middle_point(p1, p2):
@@ -92,12 +88,12 @@ class Eye(object):
 
         return ratio
 
-    def _analyze(self, original_frame, landmarks, side, calibration):
+    def _analyze(self, original_frames, landmarks, side, calibration):
         """Detects and isolates the eye in a new frame, sends data to the calibration
         and initializes Pupil object.
 
         Arguments:
-            original_frame (numpy.ndarray): Frame passed by the user
+            original_frames (numpy.ndarray): Frame passed by the user
             landmarks (dlib.full_object_detection): Facial landmarks for the face region
             side: Indicates whether it's the left eye (0) or the right eye (1)
             calibration (calibration.Calibration): Manages the binarization threshold value
@@ -110,7 +106,7 @@ class Eye(object):
             return
 
         self.blinking = self._blinking_ratio(landmarks, points)
-        self._isolate(original_frame, landmarks, points)
+        self._isolate(original_frames, landmarks, points)
 
         if not calibration.is_complete():
             calibration.evaluate(self.frame, side)

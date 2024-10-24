@@ -8,14 +8,9 @@ from src.utils.calibration import Calibration
 
 
 class GazeTracking(object):
-    """
-    This class tracks the user's gaze.
-    It provides useful information like the position of the eyes
-    and pupils and allows to know if the eyes are open or closed
-    """
 
     def __init__(self):
-        self.frame = None
+        self.frames = None
         self.eye_left = None
         self.eye_right = None
         self.calibration = Calibration()
@@ -42,25 +37,25 @@ class GazeTracking(object):
 
     def _analyze(self):
         """Detects the face and initialize Eye objects"""
-        frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
-        faces = self._face_detector(frame)
+        frames = cv2.cvtColor(self.frames, cv2.COLOR_BGR2GRAY)
+        faces = self._face_detector(frames)
 
         try:
-            landmarks = self._predictor(frame, faces[0])
-            self.eye_left = Eye(frame, landmarks, 0, self.calibration)
-            self.eye_right = Eye(frame, landmarks, 1, self.calibration)
+            landmarks = self._predictor(frames, faces[0])
+            self.eye_left = Eye(frames, landmarks, 0, self.calibration)
+            self.eye_right = Eye(frames, landmarks, 1, self.calibration)
 
         except IndexError:
             self.eye_left = None
             self.eye_right = None
 
-    def refresh(self, frame):
-        """Refreshes the frame and analyzes it.
+    def refresh(self, frames):
+        """Refreshes the frames and analyzes it.
 
         Arguments:
-            frame (numpy.ndarray): The frame to analyze
+            frames (numpy.ndarray): The frames to analyze
         """
-        self.frame = frame
+        self.frames = frames
         self._analyze()
 
     def pupil_left_coords(self):
@@ -118,17 +113,17 @@ class GazeTracking(object):
             blinking_ratio = (self.eye_left.blinking + self.eye_right.blinking) / 2
             return blinking_ratio > 3.8
 
-    def annotated_frame(self):
-        """Returns the main frame with pupils highlighted"""
-        frame = self.frame.copy()
+    def annotated_frames(self):
+        """Returns the main frames with pupils highlighted"""
+        frames = self.frames.copy()
 
         if self.pupils_located:
             color = (0, 255, 0)
             x_left, y_left = self.pupil_left_coords()
             x_right, y_right = self.pupil_right_coords()
-            cv2.line(frame, (x_left - 5, y_left), (x_left + 5, y_left), color)
-            cv2.line(frame, (x_left, y_left - 5), (x_left, y_left + 5), color)
-            cv2.line(frame, (x_right - 5, y_right), (x_right + 5, y_right), color)
-            cv2.line(frame, (x_right, y_right - 5), (x_right, y_right + 5), color)
+            cv2.line(frames, (x_left - 5, y_left), (x_left + 5, y_left), color)
+            cv2.line(frames, (x_left, y_left - 5), (x_left, y_left + 5), color)
+            cv2.line(frames, (x_right - 5, y_right), (x_right + 5, y_right), color)
+            cv2.line(frames, (x_right, y_right - 5), (x_right, y_right + 5), color)
 
-        return frame
+        return frames
